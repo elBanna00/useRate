@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Movie {
   imdbID: string;
@@ -59,9 +59,23 @@ const tempWatchedData = [
 const average = (arr: number[]) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
+
+const KEY = "ee91d783"
+
+const query = "Fight Club"
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
+  useEffect(() => {
+    async function fetchMovies() {
+      const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
+      const data = await res.json();
+      setMovies(data.Search)
+    }
+    fetchMovies();
+
+  }, [])
+
   return (
     <>
       <NavBar>
@@ -78,6 +92,13 @@ export default function App() {
       </Main>
     </>
   );
+}
+interface LoaderProps {
+
+}
+
+export const Loader: React.FC<LoaderProps> = () => {
+  return <p className="loader">Loading...</p>
 }
 interface NavBarProps {
   children: React.ReactNode;
@@ -106,9 +127,9 @@ export const Results: React.FC<ResultsProps> = ({ movies }) => {
   );
 };
 
-interface SearchProps {}
+interface SearchProps { }
 
-export const Search: React.FC<SearchProps> = ({}) => {
+export const Search: React.FC<SearchProps> = ({ }) => {
   const [query, setQuery] = useState("");
   return (
     <input
@@ -121,9 +142,9 @@ export const Search: React.FC<SearchProps> = ({}) => {
   );
 };
 
-interface LogoProps {}
+interface LogoProps { }
 
-export const Logo: React.FC<LogoProps> = ({}) => {
+export const Logo: React.FC<LogoProps> = ({ }) => {
   return (
     <div className="logo">
       <span>🔱</span>
